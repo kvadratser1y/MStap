@@ -135,3 +135,4 @@ nicknameForm.addEventListener('submit', (e) => {
         errorMessage.textContent = 'Ник должен состоять из латинских букв и содержать максимум 2 цифры.';
     }
 });
+
