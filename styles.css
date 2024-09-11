@@ -46,37 +46,6 @@ body {
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
     
 }
-/* Общие стили для кнопки */
-.tap-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 50%;
-    padding: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-.tap-button img {
-    width: 50px; /* Размер иконки */
-    height: 50px; /* Размер иконки */
-}
-
-/* Увеличиваем кнопку на мобильных устройствах */
-@media (max-width: 768px) {
-    .tap-button {
-        padding: 20px; /* Увеличиваем размер кнопки */
-        transform: scale(1.5); /* Увеличиваем кнопку на 50% */
-    }
-
-    .tap-button img {
-        width: 80px; /* Увеличиваем размер иконки */
-        height: 80px; /* Увеличиваем размер иконки */
-    }
-}
-
 
 .energy {
     margin-top: 20px;
