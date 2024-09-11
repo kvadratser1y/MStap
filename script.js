@@ -16,6 +16,7 @@ const errorMessage = document.getElementById('error-message');
 const gameSection = document.getElementById('game-section');
 const nicknameSection = document.getElementById('nickname-section');
 const leaderboardSection = document.getElementById('leaderboard-section');
+const timerCountElement = document.getElementById('timer-count');
 
 // Отображение таблицы лидеров
 const updateLeaderboard = () => {
@@ -66,6 +67,22 @@ const checkEnergyRefill = () => {
     }
 };
 
+// Функция для обновления таймера восстановления энергии
+const updateTimer = () => {
+    const now = Date.now();
+    const timePassed = now - lastEnergyRefill;
+    const timeLeft = 3600000 - timePassed;
+
+    if (timeLeft > 0) {
+        const hours = Math.floor(timeLeft / 3600000);
+        const minutes = Math.floor((timeLeft % 3600000) / 60000);
+        const seconds = Math.floor((timeLeft % 60000) / 1000);
+        timerCountElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    } else {
+        timerCountElement.textContent = '00:00:00';
+    }
+};
+
 // Обновляем количество тапов и энергию
 tapButton.addEventListener('click', () => {
     if (energy > 0) {
@@ -92,10 +109,14 @@ tapButton.addEventListener('click', () => {
 });
 
 // Проверяем восстановление энергии каждые 10 секунд
-setInterval(checkEnergyRefill, 10000);
+setInterval(() => {
+    checkEnergyRefill();
+    updateTimer();
+}, 10000);
 
 // Проверка энергии при загрузке страницы
 checkEnergyRefill();
+updateTimer();
 
 // Обработка формы для выбора ника
 nicknameForm.addEventListener('submit', (e) => {
