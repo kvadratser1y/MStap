@@ -44,7 +44,6 @@ body {
 .tap-button:active {
     transform: scale(0.95);
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
-    
 }
 
 .energy {
@@ -76,3 +75,4 @@ html, body {
         content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
     }
 }
+
