@@ -67,3 +67,13 @@ body {
 .subscribe-button:hover {
     background-color: #c0392b;
 }
+
+html, body {
+    touch-action: manipulation;
+    -ms-touch-action: manipulation;
+    meta[name="viewport"] {
+        content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+    }
+}
+
+
