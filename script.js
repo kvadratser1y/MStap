@@ -6,6 +6,11 @@ let lastTap = localStorage.getItem('lastTap') ? parseInt(localStorage.getItem('l
 let nickname = localStorage.getItem('nickname');
 let dailyStreak = localStorage.getItem('dailyStreak') ? parseInt(localStorage.getItem('dailyStreak')) : 0;
 let lastDailyReward = localStorage.getItem('lastDailyReward') ? parseInt(localStorage.getItem('lastDailyReward')) : 0;
+let rebirthCount = localStorage.getItem('rebirthCount') ? parseInt(localStorage.getItem('rebirthCount')) : 0;
+let tapMultiplier = localStorage.getItem('tapMultiplier') ? parseInt(localStorage.getItem('tapMultiplier')) : 1;
+let coinsPerHour = localStorage.getItem('coinsPerHour') ? parseInt(localStorage.getItem('coinsPerHour')) : 0;
+let coins = localStorage.getItem('coins') ? parseInt(localStorage.getItem('coins')) : 0;
+let currentRank = localStorage.getItem('currentRank') || "Бронза";
 
 // Элементы DOM
 const tapCountElement = document.getElementById('tap-count');
@@ -21,9 +26,26 @@ const nicknameSection = document.getElementById('nickname-section');
 const leaderboardSection = document.getElementById('leaderboard-section');
 const timerCountElement = document.getElementById('timer-count');
 const resetTimerElement = document.createElement('p'); // Новый элемент для таймера обнуления
+const rewardsTable = document.getElementById('rewards-tbody');
 
 // Добавляем таймер обнуления под ником
 nicknameDisplay.insertAdjacentElement('afterend', resetTimerElement);
+
+// Функция для отображения нужной секции
+const showSection = (sectionId) => {
+    document.getElementById('nickname-section').style.display = 'none';
+    document.getElementById('game-section').style.display = 'none';
+    document.getElementById('leaderboard-section').style.display = 'none';
+    document.getElementById(sectionId).style.display = 'block';
+};
+
+// Проверка на наличие ника и отображение соответствующих секций
+if (nickname) {
+    showSection('game-section');
+    nicknameDisplay.textContent = `Привет, ${nickname}!`;
+} else {
+    showSection('nickname-section');
+}
 
 // Отображение таблицы лидеров
 const updateLeaderboard = () => {
@@ -45,7 +67,7 @@ const updateLeaderboard = () => {
 const checkResetProgress = () => {
     const now = Date.now();
     const timePassed = now - lastTap;
-    
+
     if (timePassed >= 86400000) { // 24 часа в миллисекундах
         tapCount = 0;
         localStorage.setItem('tapCount', tapCount);
@@ -67,6 +89,50 @@ const updateResetTimer = () => {
         resetTimerElement.textContent = `Обнуление прогресса через: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     } else {
         resetTimerElement.textContent = '00:00:00';
+        // Функция для обновления таймера до обнуления прогресса
+const updateResetTimer = () => {
+    const now = Date.now();
+    const timePassed = now - lastTap;
+    const timeLeft = 86400000 - timePassed; // 24 часа в миллисекундах
+
+    // Если время вышло, сбрасываем прогресс и перезапускаем таймер
+    if (timeLeft <= 0) {
+        tapCount = 0;
+        localStorage.setItem('tapCount', tapCount);
+        lastTap = Date.now(); // Обновляем время последнего тапа, чтобы запустить новый цикл
+        localStorage.setItem('lastTap', lastTap);
+        alert('Ваши тапы обнулились за неактивность более 24 часов!');
+        window.location.reload(); // Обновляем страницу
+    } else {
+        // Обновляем таймер на странице
+        const hours = Math.floor(timeLeft / 3600000);
+        const minutes = Math.floor((timeLeft % 3600000) / 60000);
+        const seconds = Math.floor((timeLeft % 60000) / 1000);
+        resetTimerElement.textContent = `Обнуление прогресса через: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+};
+
+// Проверка обнуления прогресса каждые 10 секунд
+setInterval(updateResetTimer, 10000);
+
+// Вызов таймера сразу при загрузке страницы
+updateResetTimer();
+
+    }
+};
+
+// Функция для обновления таймера восстановления энергии
+const updateEnergyTimer = () => {
+    const now = Date.now();
+    const timePassed = now - lastEnergyRefill;
+    const timeLeft = 3600000 - timePassed; // Время до следующего восстановления (1 час)
+
+    if (timeLeft > 0) {
+        const minutes = Math.floor(timeLeft / 60000);
+        const seconds = Math.floor((timeLeft % 60000) / 1000);
+        timerCountElement.textContent = `Восстановление энергии через: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    } else {
+        timerCountElement.textContent = '00:00:00';
     }
 };
 
@@ -77,131 +143,177 @@ const checkDailyReward = () => {
 
     if (now - lastDailyReward >= oneDay) {
         dailyStreak++; // Увеличиваем серию входов
-        energy += dailyStreak * 10000; // Ежедневный приз в виде энергии
+        let bonus;
+        let rewardType;
+
+        if (dailyStreak % 2 === 1) { // Если день нечетный
+            bonus = 10000 + (dailyStreak / 2) * 5000; // Ежедневный приз в виде тапов
+            tapCount += bonus;
+            tapCountElement.textContent = tapCount;
+            rewardType = 'Тапы';
+        } else { // Если день четный
+            bonus = 15000 + (dailyStreak / 2 - 1) * 5000; // Ежедневный приз в виде энергии
+            energy = Math.min(energy + bonus, 50000); // Увеличиваем энергию, не превышая лимит
+            energyCountElement.textContent = energy;
+            rewardType = 'Энергия';
+        }
+
+        // Награда за 30-й день
+        if (dailyStreak >= 30) {
+            tapCount += 1000000;
+            alert("Поздравляем! Вы получили 1 миллион тапов!");
+        }
+
+        // Обновляем и сохраняем
         localStorage.setItem('dailyStreak', dailyStreak);
+        localStorage.setItem('tapCount', tapCount);
         localStorage.setItem('energy', energy);
         localStorage.setItem('lastDailyReward', now);
-        energyCountElement.textContent = energy;
-        alert(`Вы получили ежедневный приз: +${dailyStreak * 10000} энергии!`);
+
+        // Добавляем запись о награде в таблицу
+        const rewardDate = new Date(now).toLocaleDateString();
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${rewardDate}</td><td>${rewardType}</td><td>${bonus}</td>`;
+        rewardsTable.appendChild(row);
     }
 };
 
-// Проверяем, есть ли ник в localStorage
-if (nickname) {
-    // Переходим сразу в игру, если ник уже сохранен
-    nicknameDisplay.textContent = `Ваш ник: ${nickname}`;
-    nicknameSection.style.display = 'none';
-    gameSection.style.display = 'block';
-    leaderboardSection.style.display = 'block';
-
-    // Обновляем текст с тапами и энергией при загрузке страницы
-    tapCountElement.textContent = tapCount;
-    energyCountElement.textContent = energy;
-
-    // Обновляем таблицу лидеров
-    updateLeaderboard();
-    checkDailyReward();
-    updateResetTimer(); // Обновляем таймер обнуления при загрузке
-} else {
-    // Если ника нет, отображаем форму ввода ника
-    nicknameSection.style.display = 'block';
-}
-
-// Проверяем, прошло ли достаточно времени для восстановления энергии
+// Проверка восстановления энергии
 const checkEnergyRefill = () => {
     const now = Date.now();
     const timePassed = now - lastEnergyRefill;
 
-    // Если прошло больше часа (3600000 миллисекунд), восстанавливаем 5000 энергии
-    if (timePassed >= 3600000) {
-        energy = 5000;
+    if (timePassed >= 3600000) { // 1 час в миллисекундах
+        const refillAmount = 5000;
+        energy = Math.min(energy + refillAmount, 50000); // Добавляем энергию, не превышая лимит
         lastEnergyRefill = now;
-        localStorage.setItem('lastEnergyRefill', lastEnergyRefill);
         localStorage.setItem('energy', energy);
+        localStorage.setItem('lastEnergyRefill', lastEnergyRefill);
         energyCountElement.textContent = energy;
     }
 };
 
-// Функция для обновления таймера восстановления энергии
-const updateTimer = () => {
-    const now = Date.now();
-    const timePassed = now - lastEnergyRefill;
-    const timeLeft = 3600000 - timePassed;
-
-    if (timeLeft > 0) {
-        const hours = Math.floor(timeLeft / 3600000);
-        const minutes = Math.floor((timeLeft % 3600000) / 60000);
-        const seconds = Math.floor((timeLeft % 60000) / 1000);
-        timerCountElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    } else {
-        timerCountElement.textContent = '00:00:00';
-    }
-};
-
-// Обновляем количество тапов и энергию
+// Обработчик клика по кнопке тапов
 tapButton.addEventListener('click', () => {
+    checkResetProgress();
+    checkEnergyRefill();
+
     if (energy > 0) {
-        tapCount++;
-        energy--;
-
+        tapCount += tapMultiplier;
         tapCountElement.textContent = tapCount;
-        energyCountElement.textContent = energy;
-
-        // Сохраняем в localStorage
+        energy -= 1; // Отнимаем одну единицу энергии за тап
         localStorage.setItem('tapCount', tapCount);
         localStorage.setItem('energy', energy);
-
-        // Сохраняем прогресс по нику
-        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || {};
-        leaderboard[nickname] = tapCount;
-        localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-
-        // Обновляем таблицу лидеров
-        updateLeaderboard();
-
-        // Обновляем время последнего тапа
+        energyCountElement.textContent = energy;
         lastTap = Date.now();
         localStorage.setItem('lastTap', lastTap);
+        updateRank();
     } else {
-        alert('Недостаточно энергии! Подождите или купите подписку.');
+        alert('Недостаточно энергии для тапов!');
     }
 });
 
-// Проверяем восстановление энергии каждые 10 секунд
-setInterval(() => {
-    checkEnergyRefill();
-    updateTimer();
-    updateResetTimer(); // Обновляем таймер обнуления каждые 10 секунд
-    checkResetProgress(); // Проверяем, нужно ли обнулить прогресс
-}, 10000);
-
-// Проверка энергии при загрузке страницы
-checkEnergyRefill();
-updateTimer();
-
-// Обработка формы для выбора ника
-nicknameForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+// Обработчик формы для ввода ника
+nicknameForm.addEventListener('submit', (event) => {
+    event.preventDefault();
     const inputNickname = nicknameInput.value.trim();
 
-    // Проверка на валидность ника (латинские буквы и максимум 2 цифры)
-    const nicknameRegex = /^[a-zA-Z]{1,8}[0-9]{0,2}$/;
+    // Проверяем валидность ника
+    if (/^[a-zA-Z]{1,10}\d{0,2}$/.test(inputNickname)) {
+        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || {};
 
-    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || {};
-
-    // Проверка, существует ли уже такой ник
-    if (nicknameRegex.test(inputNickname)) {
         if (leaderboard[inputNickname]) {
-            // Если ник уже существует
             errorMessage.textContent = 'Ник уже существует. Пожалуйста, выберите другой.';
         } else {
             // Сохраняем ник, если он уникален
             localStorage.setItem('nickname', inputNickname);
             localStorage.setItem('tapCount', 0); // Обнуляем счетчик для нового пользователя
             localStorage.setItem('energy', 5000); // Восстанавливаем энергию
+            showSection('game-section'); // Переходим к секции игры
+            nicknameDisplay.textContent = `Привет, ${inputNickname}!`;
+            nicknameInput.value = ''; // Очищаем поле ввода
+            errorMessage.textContent = ''; // Очищаем сообщение об ошибке
             window.location.reload(); // Перезагружаем страницу, чтобы ник обновился
         }
     } else {
         errorMessage.textContent = 'Ник должен состоять из латинских букв и содержать максимум 2 цифры.';
     }
 });
+
+// Функция возрождения
+const handleRebirth = () => {
+    if (tapCount >= 10000) {
+        const confirmation = confirm("Вы уверены, что хотите возродиться? Вы получите 2 тапа за 1 тап, 1000 монет в час, но все ваши монеты будут удалены.");
+        if (confirmation) {
+            tapMultiplier = 2;
+            coinsPerHour = 1000;
+            coins = 0;
+            rebirthCount++;
+            localStorage.setItem('rebirthCount', rebirthCount);
+            localStorage.setItem('tapMultiplier', tapMultiplier);
+            localStorage.setItem('coinsPerHour', coinsPerHour);
+            localStorage.setItem('coins', coins);
+            tapCount = 0;
+            localStorage.setItem('tapCount', tapCount);
+            alert("Вы возродились и теперь получаете 2 тапа за 1 тап, 1000 монет в час!");
+        }
+    } else {
+        alert('Для возрождения вам нужно 10000 тапов.');
+    }
+};
+
+// Проверка возрождения
+const rebirthButton = document.createElement('button');
+rebirthButton.textContent = 'Возродиться';
+rebirthButton.className = 'subscribe-button';
+rebirthButton.style.display = 'none';
+gameSection.appendChild(rebirthButton);
+
+if (tapCount >= 10000) {
+    rebirthButton.style.display = 'block';
+    rebirthButton.addEventListener('click', handleRebirth);
+}
+
+// Обновление ранга
+const updateRank = () => {
+    let rankText = '';
+    let progress = '';
+
+    if (tapCount >= 1000000000) { // 1 миллиард тапов
+        currentRank = "Hellsteel 🟪";
+    } else if (tapCount >= 100000000) { // 100 миллионов тапов
+        currentRank = "Алмаз 🟦";
+    } else if (tapCount >= 1000000) { // 1 миллион тапов
+        currentRank = "Золото 🟨";
+    } else if (tapCount >= 10000) { // 10 тысяч тапов
+        currentRank = "Серебро ⬜";
+    } else {
+        currentRank = "Бронза 🟫";
+    }
+
+    // Определение прогресса до следующего ранга
+    if (tapCount < 10000) {
+        progress = `🟫 Bronze ${tapCount} / 10000`;
+    } else if (tapCount < 1000000) {
+        progress = `⬜ Silver ${tapCount - 10000} / 1000000`;
+    } else if (tapCount < 100000000) {
+        progress = `🟨 Gold ${tapCount - 1000000} / 100000000`;
+    } else {
+        progress = `🟦 Diamond ${tapCount - 100000000} / 1000000000`;
+    }
+
+    localStorage.setItem('currentRank', currentRank);
+    document.getElementById('rank-display').textContent = `Ранг: ${currentRank} ${progress}`;
+};
+
+// Обновляем таймеры и ранк каждую секунду
+setInterval(() => {
+    updateResetTimer();
+    updateEnergyTimer();
+    checkDailyReward();
+}, 1000);
+
+// Инициализация
+updateRank();
+updateResetTimer();
+updateEnergyTimer();
