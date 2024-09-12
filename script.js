@@ -2,7 +2,10 @@
 let tapCount = localStorage.getItem('tapCount') ? parseInt(localStorage.getItem('tapCount')) : 0;
 let energy = localStorage.getItem('energy') ? parseInt(localStorage.getItem('energy')) : 5000;
 let lastEnergyRefill = localStorage.getItem('lastEnergyRefill') ? parseInt(localStorage.getItem('lastEnergyRefill')) : Date.now();
+let lastTap = localStorage.getItem('lastTap') ? parseInt(localStorage.getItem('lastTap')) : Date.now();
 let nickname = localStorage.getItem('nickname');
+let dailyStreak = localStorage.getItem('dailyStreak') ? parseInt(localStorage.getItem('dailyStreak')) : 0;
+let lastDailyReward = localStorage.getItem('lastDailyReward') ? parseInt(localStorage.getItem('lastDailyReward')) : 0;
 
 // Элементы DOM
 const tapCountElement = document.getElementById('tap-count');
@@ -17,6 +20,10 @@ const gameSection = document.getElementById('game-section');
 const nicknameSection = document.getElementById('nickname-section');
 const leaderboardSection = document.getElementById('leaderboard-section');
 const timerCountElement = document.getElementById('timer-count');
+const resetTimerElement = document.createElement('p'); // Новый элемент для таймера обнуления
+
+// Добавляем таймер обнуления под ником
+nicknameDisplay.insertAdjacentElement('afterend', resetTimerElement);
 
 // Отображение таблицы лидеров
 const updateLeaderboard = () => {
@@ -26,11 +33,57 @@ const updateLeaderboard = () => {
     // Сортируем таблицу по количеству тапов
     const sortedLeaderboard = Object.entries(leaderboard).sort((a, b) => b[1] - a[1]);
 
-    sortedLeaderboard.forEach(([nickname, taps]) => {
+    // Ограничиваем отображение до топ-10
+    sortedLeaderboard.slice(0, 10).forEach(([nickname, taps]) => {
         const row = document.createElement('tr');
         row.innerHTML = `<td>${nickname}</td><td>${taps}</td>`;
         leaderboardTable.appendChild(row);
     });
+};
+
+// Проверка обнуления прогресса, если игрок не тапал 24 часа
+const checkResetProgress = () => {
+    const now = Date.now();
+    const timePassed = now - lastTap;
+    
+    if (timePassed >= 86400000) { // 24 часа в миллисекундах
+        tapCount = 0;
+        localStorage.setItem('tapCount', tapCount);
+        alert('Ваши тапы обнулились за неактивность более 24 часов!');
+        window.location.reload();
+    }
+};
+
+// Функция для обновления таймера до обнуления
+const updateResetTimer = () => {
+    const now = Date.now();
+    const timePassed = now - lastTap;
+    const timeLeft = 86400000 - timePassed;
+
+    if (timeLeft > 0) {
+        const hours = Math.floor(timeLeft / 3600000);
+        const minutes = Math.floor((timeLeft % 3600000) / 60000);
+        const seconds = Math.floor((timeLeft % 60000) / 1000);
+        resetTimerElement.textContent = `Обнуление прогресса через: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    } else {
+        resetTimerElement.textContent = '00:00:00';
+    }
+};
+
+// Функция для ежедневных призов
+const checkDailyReward = () => {
+    const now = Date.now();
+    const oneDay = 86400000; // 1 день в миллисекундах
+
+    if (now - lastDailyReward >= oneDay) {
+        dailyStreak++; // Увеличиваем серию входов
+        energy += dailyStreak * 10000; // Ежедневный приз в виде энергии
+        localStorage.setItem('dailyStreak', dailyStreak);
+        localStorage.setItem('energy', energy);
+        localStorage.setItem('lastDailyReward', now);
+        energyCountElement.textContent = energy;
+        alert(`Вы получили ежедневный приз: +${dailyStreak * 10000} энергии!`);
+    }
 };
 
 // Проверяем, есть ли ник в localStorage
@@ -47,6 +100,8 @@ if (nickname) {
 
     // Обновляем таблицу лидеров
     updateLeaderboard();
+    checkDailyReward();
+    updateResetTimer(); // Обновляем таймер обнуления при загрузке
 } else {
     // Если ника нет, отображаем форму ввода ника
     nicknameSection.style.display = 'block';
@@ -103,6 +158,10 @@ tapButton.addEventListener('click', () => {
 
         // Обновляем таблицу лидеров
         updateLeaderboard();
+
+        // Обновляем время последнего тапа
+        lastTap = Date.now();
+        localStorage.setItem('lastTap', lastTap);
     } else {
         alert('Недостаточно энергии! Подождите или купите подписку.');
     }
@@ -112,6 +171,8 @@ tapButton.addEventListener('click', () => {
 setInterval(() => {
     checkEnergyRefill();
     updateTimer();
+    updateResetTimer(); // Обновляем таймер обнуления каждые 10 секунд
+    checkResetProgress(); // Проверяем, нужно ли обнулить прогресс
 }, 10000);
 
 // Проверка энергии при загрузке страницы
@@ -126,11 +187,20 @@ nicknameForm.addEventListener('submit', (e) => {
     // Проверка на валидность ника (латинские буквы и максимум 2 цифры)
     const nicknameRegex = /^[a-zA-Z]{1,8}[0-9]{0,2}$/;
 
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || {};
+
+    // Проверка, существует ли уже такой ник
     if (nicknameRegex.test(inputNickname)) {
-        localStorage.setItem('nickname', inputNickname);
-        localStorage.setItem('tapCount', 0); // Обнуляем счетчик для нового пользователя
-        localStorage.setItem('energy', 5000); // Восстанавливаем энергию
-        window.location.reload(); // Перезагружаем страницу, чтобы ник обновился
+        if (leaderboard[inputNickname]) {
+            // Если ник уже существует
+            errorMessage.textContent = 'Ник уже существует. Пожалуйста, выберите другой.';
+        } else {
+            // Сохраняем ник, если он уникален
+            localStorage.setItem('nickname', inputNickname);
+            localStorage.setItem('tapCount', 0); // Обнуляем счетчик для нового пользователя
+            localStorage.setItem('energy', 5000); // Восстанавливаем энергию
+            window.location.reload(); // Перезагружаем страницу, чтобы ник обновился
+        }
     } else {
         errorMessage.textContent = 'Ник должен состоять из латинских букв и содержать максимум 2 цифры.';
     }
