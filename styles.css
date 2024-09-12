@@ -9,6 +9,14 @@ body {
     font-family: 'Montserrat', sans-serif;
     background: url('https://i.pinimg.com/564x/47/9e/e4/479ee40ab9ae84e296b3c966783874a1.jpg') no-repeat center center fixed;
     background-size: cover;
+    text-align: center; /* Центрирование текста */
+}
+
+#nickname-section, #game-section, #leaderboard-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрирование элементов по горизонтали */
+    justify-content: center;
 }
 
 .counter {
@@ -18,6 +26,7 @@ body {
     margin-top: 20px;
     display: flex;
     align-items: center;
+    justify-content: center; /* Центрирование контента */
 }
 
 .counter img {
@@ -52,6 +61,12 @@ body {
     color: white;
 }
 
+.timer {
+    margin-top: 10px;
+    font-size: 20px;
+    color: white;
+}
+
 .subscribe-button {
     margin-top: 30px;
     padding: 10px 20px;
@@ -62,17 +77,41 @@ body {
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
+    text-align: center; /* Центрирование текста */
 }
 
 .subscribe-button:hover {
     background-color: #c0392b;
 }
 
+table {
+    margin-top: 20px;
+    color: white;
+    border-collapse: collapse;
+    text-align: center; /* Центрирование текста в таблице */
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid white;
+}
+
 html, body {
     touch-action: manipulation;
     -ms-touch-action: manipulation;
-    meta[name="viewport"] {
-        content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
-    }
 }
 
+@media screen and (max-width: 600px) {
+    .tap-button img {
+        width: 200px; /* Немного уменьшение на мобильных устройствах */
+        height: 200px;
+    }
+
+    .energy, .timer {
+        font-size: 16px; /* Уменьшение шрифта на мобильных устройствах */
+    }
+
+    table {
+        font-size: 14px;
+    }
+}
