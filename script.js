@@ -23,6 +23,11 @@ const timerCountElement = document.getElementById('timer-count');
 const resetTimerElement = document.createElement('p'); // Новый элемент для таймера обнуления
 const rankDisplayElement = document.getElementById('rank-display');
 
+// Промокоды
+const promoInput = document.getElementById('promo-input');
+const promoButton = document.getElementById('promo-button');
+const promoMessage = document.getElementById('promo-message');
+
 // Добавляем таймер обнуления под ником
 nicknameDisplay.insertAdjacentElement('afterend', resetTimerElement);
 
@@ -144,20 +149,6 @@ const checkDailyReward = () => {
     }
 };
 
-// Обновление всех данных по таймерам и энергии каждые 10 секунд
-setInterval(() => {
-    checkEnergyRefill();
-    updateEnergyTimer();
-    updateResetTimer(); 
-    checkResetProgress(); 
-}, 10000);
-
-// Обновление информации при загрузке страницы
-checkEnergyRefill();
-updateEnergyTimer();
-updateRankDisplay();
-checkDailyReward();
-
 // Обработка кликов по кнопке "Тап"
 tapButton.addEventListener('click', () => {
     if (energy > 0) {
@@ -178,35 +169,71 @@ tapButton.addEventListener('click', () => {
         lastTap = Date.now();
         localStorage.setItem('lastTap', lastTap);
     } else {
-        alert('Недостаточно энергии! Подождите или купите подписку.');
+        alert('Недостаточно энергии! Подождите восстановления.');
     }
 });
 
-// Обработка формы ввода ника
-nicknameForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+// Обработка формы с ником
+nicknameForm.addEventListener('submit', (event) => {
+    event.preventDefault();
     const nicknameValue = nicknameInput.value.trim();
 
-    if (/^[a-zA-Z]{1,8}[0-9]{0,2}$/.test(nicknameValue)) {
+    // Проверяем, что ник состоит только из латинских букв и цифр, не более 2 цифр
+    if (/^[a-zA-Z]*\d{0,2}$/.test(nicknameValue)) {
         nickname = nicknameValue;
         localStorage.setItem('nickname', nickname);
-        nicknameDisplay.textContent = nickname;
+
+        nicknameDisplay.textContent = `Ваш ник: ${nickname}`;
         nicknameSection.style.display = 'none';
         gameSection.style.display = 'block';
-        leaderboardSection.style.display = 'block';
+
+        checkDailyReward();
+        checkEnergyRefill();
+        checkResetProgress();
+        setInterval(updateEnergyTimer, 1000);
+        setInterval(updateResetTimer, 1000);
     } else {
-        errorMessage.textContent = 'Некорректный ник! Только латинские символы и максимум 2 цифры.';
+        errorMessage.textContent = 'Некорректный ник! Используйте латинские буквы и не более 2 цифр.';
     }
 });
 
-// Проверка наличия ника
+// Промокоды
+promoButton.addEventListener('click', () => {
+    const promoCodes = {
+        '5984': 100000, 
+        'kvadratser1y': 150000
+    };
+
+    const enteredCode = promoInput.value.trim();
+
+    if (promoCodes.hasOwnProperty(enteredCode)) {
+        const tapsToAdd = promoCodes[enteredCode];
+        tapCount += tapsToAdd;
+        localStorage.setItem('tapCount', tapCount);
+        tapCountElement.textContent = tapCount;
+        updateRankDisplay();
+
+        promoMessage.textContent = `Промокод активирован! Вы получили ${tapsToAdd.toLocaleString()} тапов.`;
+        promoMessage.style.color = 'green';
+        promoInput.value = '';
+    } else {
+        promoMessage.textContent = 'Неверный промокод!';
+        promoMessage.style.color = 'red';
+    }
+});
+
+// Инициализация игры
 if (nickname) {
-    nicknameDisplay.textContent = nickname;
+    nicknameDisplay.textContent = `Ваш ник: ${nickname}`;
     nicknameSection.style.display = 'none';
     gameSection.style.display = 'block';
-    leaderboardSection.style.display = 'block';
-} else {
-    nicknameSection.style.display = 'block';
-    gameSection.style.display = 'none';
-    leaderboardSection.style.display = 'none';
+    checkDailyReward();
+    checkEnergyRefill();
+    checkResetProgress();
+    setInterval(updateEnergyTimer, 1000);
+    setInterval(updateResetTimer, 1000);
 }
+
+tapCountElement.textContent = tapCount;
+energyCountElement.textContent = energy;
+updateRankDisplay();
