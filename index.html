@@ -21,29 +21,38 @@
 
     <!-- Секция игры (сначала скрыта) -->
     <div id="game-section" style="display: none;">
-    <h2 id="nickname-display"></h2>
-    <div class="counter">
-        <img src="https://cdn-icons-png.flaticon.com/128/12546/12546441.png" alt="icon">
-        <p>Тапов: <span id="tap-count">0</span></p>
-    </div>
-    <p id="rank-display"></p>
-    <button class="tap-button" id="tap-button">
-        <img src="https://cdn-icons-png.flaticon.com/128/1275/1275098.png" alt="tap-icon">
-    </button>
-    <p class="energy">⚡️Энергия: <span id="energy-count">5000</span></p>
-    <p class="timer">Восстановление энергии через: <span id="timer-count">00:00:00</span></p>
-    <a href="https://paypal.com" class="subscribe-button">Купить подписку</a>
-    <h3>История ежедневных бонусов🎁</h3>
-    <table id="rewards-table" border="1">
-        <thead>
-            <tr>
-                <th>Дата</th>
-                <th>Тип награды</th>
-                <th>Количество</th>
-            </tr>
-        </thead>
-        <tbody id="rewards-tbody"></tbody>
-    </table>
+        <h2 id="nickname-display"></h2>
+        <div class="counter">
+            <img src="https://cdn-icons-png.flaticon.com/128/12546/12546441.png" alt="icon">
+            <p>Тапов: <span id="tap-count">0</span></p>
+        </div>
+        <p id="rank-display"></p>
+        <button class="tap-button" id="tap-button">
+            <img src="https://cdn-icons-png.flaticon.com/128/1275/1275098.png" alt="tap-icon">
+        </button>
+        <p class="energy">⚡️Энергия: <span id="energy-count">5000</span></p>
+        <p class="timer">Восстановление энергии через: <span id="timer-count">00:00:00</span></p>
+        <a href="https://paypal.com" class="subscribe-button">Купить подписку</a>
+
+        <!-- Новая секция для ввода промокодов -->
+        <h3>Введите промокод для бонуса:</h3>
+        <div id="promo-section">
+            <input type="text" id="promo-input" placeholder="Введите промокод" maxlength="20">
+            <button id="promo-button" class="subscribe-button">Активировать</button>
+            <p id="promo-message" style="color: red;"></p>
+        </div>
+
+        <h3>История ежедневных бонусов🎁</h3>
+        <table id="rewards-table" border="1">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Тип награды</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody id="rewards-tbody"></tbody>
+        </table>
     </div>
 
     <!-- Секция таблицы лидеров -->
@@ -63,4 +72,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
