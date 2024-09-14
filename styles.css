@@ -78,10 +78,29 @@ body {
     cursor: pointer;
     text-decoration: none;
     text-align: center; /* Центрирование текста */
+    transition: background-color 0.3s ease;
 }
 
 .subscribe-button:hover {
     background-color: #c0392b;
+}
+
+.rebirth-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.rebirth-button:hover {
+    background-color: #2980b9;
 }
 
 table {
