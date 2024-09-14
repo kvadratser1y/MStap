@@ -34,17 +34,17 @@ nicknameDisplay.insertAdjacentElement('afterend', resetTimerElement);
 // Функция для отображения ранга на основе количества тапов
 const getRank = (tapCount) => {
     if (tapCount >= 1000000000) {
-        return { rank: 'Hellsteel', emoji: '🔥', next: 'Max rank', tapsForNext: 0 };
+        return { rank: 'Hellsteel', emoji: '🔥', next: 'Максимальный ранг', tapsForNext: 0 };
     } else if (tapCount >= 100000000) {
-        return { rank: 'Brilliant', emoji: '💎', next: 'Hellsteel', tapsForNext: 1000000000 - tapCount };
+        return { rank: 'Алмаз', emoji: '💎', next: 'Hellsteel', tapsForNext: 1000000000 - tapCount };
     } else if (tapCount >= 1000000) {
-        return { rank: 'Gold', emoji: '🥇', next: 'Brilliant, tapsForNext: 100000000 - tapCount };
+        return { rank: 'Золото', emoji: '🥇', next: 'Алмаз', tapsForNext: 100000000 - tapCount };
     } else if (tapCount >= 100000) {
-        return { rank: 'Iron', emoji: '🛠️', next: 'Gold', tapsForNext: 1000000 - tapCount };
+        return { rank: 'Железо', emoji: '🛠️', next: 'Золото', tapsForNext: 1000000 - tapCount };
     } else if (tapCount >= 10000) {
-        return { rank: 'Copper', emoji: '🥉', next: 'Iron', tapsForNext: 100000 - tapCount };
+        return { rank: 'Медь', emoji: '🥉', next: 'Железо', tapsForNext: 100000 - tapCount };
     } else {
-        return { rank: 'Bronze', emoji: '🟫', next: 'Copper', tapsForNext: 10000 - tapCount };
+        return { rank: 'Бронза', emoji: '🟫', next: 'Медь', tapsForNext: 10000 - tapCount };
     }
 };
 
@@ -55,7 +55,7 @@ const updateRankDisplay = () => {
     if (tapsForNext > 0) {
         rankDisplayElement.textContent = `${emoji} ${rank} ${tapCount.toLocaleString()} / ${next} ${tapsForNext.toLocaleString()}`;
     } else {
-        rankDisplayElement.textContent = `${emoji} ${rank} (Max rank)`;
+        rankDisplayElement.textContent = `${emoji} ${rank} (Максимальный ранг)`;
     }
 };
 
@@ -67,7 +67,7 @@ const checkResetProgress = () => {
     if (timePassed >= 86400000) { // 24 часа в миллисекундах
         tapCount = 0;
         localStorage.setItem('tapCount', tapCount);
-        alert('Your coins reset, because you didnt tap 24 hours!');
+        alert('Ваши тапы обнулились за неактивность более 24 часов!');
         window.location.reload();
     }
 };
@@ -82,7 +82,7 @@ const updateResetTimer = () => {
         const hours = Math.floor(timeLeft / 3600000);
         const minutes = Math.floor((timeLeft % 3600000) / 60000);
         const seconds = Math.floor((timeLeft % 60000) / 1000);
-        resetTimerElement.textContent = `Coins reset in: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        resetTimerElement.textContent = `Обнуление прогресса через: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     } else {
         resetTimerElement.textContent = '00:00:00';
     }
@@ -145,7 +145,7 @@ const checkDailyReward = () => {
         lastDailyReward = now;
         localStorage.setItem('dailyStreak', dailyStreak);
         localStorage.setItem('lastDailyReward', lastDailyReward);
-        alert(`You get daily bonus: ${tapReward > 0 ? tapReward + ' coins' : energyReward + ' energy'}!`);
+        alert(`Вы получили ежедневный приз: ${tapReward > 0 ? tapReward + ' тапов' : energyReward + ' энергии'}!`);
     }
 };
 
@@ -169,7 +169,7 @@ tapButton.addEventListener('click', () => {
         lastTap = Date.now();
         localStorage.setItem('lastTap', lastTap);
     } else {
-        alert('Not enough energy! Please wait to refill energy.');
+        alert('Недостаточно энергии! Подождите восстановления.');
     }
 });
 
@@ -183,7 +183,7 @@ nicknameForm.addEventListener('submit', (event) => {
         nickname = nicknameValue;
         localStorage.setItem('nickname', nickname);
 
-        nicknameDisplay.textContent = `Your nickname: ${nickname}`;
+        nicknameDisplay.textContent = `Ваш ник: ${nickname}`;
         nicknameSection.style.display = 'none';
         gameSection.style.display = 'block';
 
@@ -193,7 +193,7 @@ nicknameForm.addEventListener('submit', (event) => {
         setInterval(updateEnergyTimer, 1000);
         setInterval(updateResetTimer, 1000);
     } else {
-        errorMessage.textContent = 'Impossible nickname! Enter Latin letters and delete extra numbers if there are more than two';
+        errorMessage.textContent = 'Некорректный ник! Используйте латинские буквы и не более 2 цифр.';
     }
 });
 
@@ -213,18 +213,18 @@ promoButton.addEventListener('click', () => {
         tapCountElement.textContent = tapCount;
         updateRankDisplay();
 
-        promoMessage.textContent = `Promocode activated! You got: ${tapsToAdd.toLocaleString()} coins.`;
+        promoMessage.textContent = `Промокод активирован! Вы получили ${tapsToAdd.toLocaleString()} тапов.`;
         promoMessage.style.color = 'green';
         promoInput.value = '';
     } else {
-        promoMessage.textContent = 'Incorrect promocode!';
+        promoMessage.textContent = 'Неверный промокод!';
         promoMessage.style.color = 'red';
     }
 });
 
 // Инициализация игры
 if (nickname) {
-    nicknameDisplay.textContent = `Your nickname: ${nickname}`;
+    nicknameDisplay.textContent = `Ваш ник: ${nickname}`;
     nicknameSection.style.display = 'none';
     gameSection.style.display = 'block';
     checkDailyReward();
