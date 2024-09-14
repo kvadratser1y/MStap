@@ -6,6 +6,11 @@ let lastTap = localStorage.getItem('lastTap') ? parseInt(localStorage.getItem('l
 let nickname = localStorage.getItem('nickname');
 let dailyStreak = localStorage.getItem('dailyStreak') ? parseInt(localStorage.getItem('dailyStreak')) : 0;
 let lastDailyReward = localStorage.getItem('lastDailyReward') ? parseInt(localStorage.getItem('lastDailyReward')) : 0;
+let rebirths = localStorage.getItem('rebirths') ? parseInt(localStorage.getItem('rebirths')) : 0;
+let tapBonus = localStorage.getItem('tapBonus') ? parseInt(localStorage.getItem('tapBonus')) : 1;
+let tapIncome = localStorage.getItem('tapIncome') ? parseInt(localStorage.getItem('tapIncome')) : 0;
+let rebirthCost = [10000, 100000, 1000000000, 10000000000, 100000000000, 1000000000000];
+let rewards = [2, 10, 100, 1000, 10000, 0];
 
 // Элементы DOM
 const tapCountElement = document.getElementById('tap-count');
@@ -25,6 +30,8 @@ const rankDisplayElement = document.getElementById('rank-display');
 const promoInput = document.getElementById('promo-input');
 const promoButton = document.getElementById('promo-button');
 const promoMessage = document.getElementById('promo-message');
+const rebirthButton = document.getElementById('rebirth-button'); // Кнопка перерождения
+const rebirthMessage = document.getElementById('rebirth-message'); // Сообщение о перерождении
 
 // Добавляем таймер обнуления под ником
 nicknameDisplay.insertAdjacentElement('afterend', resetTimerElement);
@@ -86,7 +93,7 @@ const updateResetTimer = () => {
     }
 };
 
-// Проверяем, прошло ли достаточно времени для восстановления энергии
+// Проверка восстановления энергии
 const checkEnergyRefill = () => {
     const now = Date.now();
     const timePassed = now - lastEnergyRefill;
@@ -147,31 +154,41 @@ const checkDailyReward = () => {
     }
 };
 
-// Обработка промокодов
-const applyPromoCode = (code) => {
-    let reward = 0;
+// Проверка перерождения
+const checkRebirth = () => {
+    const { rank, tapsForNext } = getRank(tapCount);
 
-    if (code === '5984') {
-        reward = 100000; // Промокод 5984 дает 100000 тапов
-    } else if (code === 'kvadratser1y') {
-        reward = 150000; // Промокод kvadratser1y дает 150000 тапов
-    } else if (code === 'DhInfirIlfo33') {
-        reward = 100000000; // Промокод DhInfirIlfo33 дает 100 миллионов тапов
-    } else {
-        promoMessage.textContent = 'Неверный промокод!';
-        promoMessage.style.color = 'red';
+    if (rebirths >= 6) {
+        rebirthMessage.textContent = 'Вы достигли максимального ранга и не можете перерождаться.';
         return;
     }
 
-    tapCount += reward;
-    localStorage.setItem('tapCount', tapCount);
-    tapCountElement.textContent = tapCount;
-    promoMessage.textContent = `Вы получили ${reward.toLocaleString()} тапов!`;
-    promoMessage.style.color = 'green';
-    updateRankDisplay();
+    if (tapCount >= rebirthCost[rebirths]) {
+        // Сброс тапов и энергии
+        tapCount = 0;
+        energy = 5000; // начальная энергия
+        localStorage.setItem('tapCount', tapCount);
+        localStorage.setItem('energy', energy);
+
+        // Обновление бонусов
+        tapBonus = rewards[rebirths];
+        tapIncome = tapBonus * 1000;
+        localStorage.setItem('tapBonus', tapBonus);
+        localStorage.setItem('tapIncome', tapIncome);
+
+        rebirths++;
+        localStorage.setItem('rebirths', rebirths);
+
+        // Обновление отображения ранга
+        updateRankDisplay();
+        
+        rebirthMessage.textContent = `Поздравляем! Вы переродились и теперь имеете бонус ${tapBonus} тапов за 1 тап и ${tapIncome} тапов в час.`;
+    } else {
+        rebirthMessage.textContent = `Для перерождения требуется ${rebirthCost[rebirths].toLocaleString()} тапов.`;
+    }
 };
 
-// Обработчик формы промокодов
+// Обработчик формы для промокодов
 promoButton.addEventListener('click', (event) => {
     event.preventDefault();
     const code = promoInput.value.trim();
@@ -203,7 +220,7 @@ nicknameForm.addEventListener('submit', (event) => {
 // Обработчик кнопки тапов
 tapButton.addEventListener('click', () => {
     if (energy > 0) {
-        tapCount++;
+        tapCount += tapBonus;
         energy--;
         localStorage.setItem('tapCount', tapCount);
         localStorage.setItem('energy', energy);
@@ -215,6 +232,12 @@ tapButton.addEventListener('click', () => {
     } else {
         alert('Недостаточно энергии!');
     }
+});
+
+// Обработчик кнопки перерождения
+rebirthButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    checkRebirth();
 });
 
 // Инициализация
@@ -238,7 +261,3 @@ setInterval(() => {
 
 // Проверка ежедневного приза при загрузке
 checkDailyReward();
-
-tapCountElement.textContent = tapCount;
-energyCountElement.textContent = energy;
-updateRankDisplay();
