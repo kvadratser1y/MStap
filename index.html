@@ -33,15 +33,6 @@
         <p class="energy">⚡️Энергия: <span id="energy-count">5000</span></p>
         <p class="timer">Восстановление энергии через: <span id="timer-count">00:00:00</span></p>
         <a href="https://paypal.com" class="subscribe-button">Купить подписку</a>
-
-        <!-- Новая секция для ввода промокодов -->
-        <h3>Введите промокод для бонуса:</h3>
-        <div id="promo-section">
-            <input type="text" id="promo-input" placeholder="Введите промокод" maxlength="20">
-            <button id="promo-button" class="subscribe-button">Активировать</button>
-            <p id="promo-message" style="color: red;"></p>
-        </div>
-
         <h3>История ежедневных бонусов🎁</h3>
         <table id="rewards-table" border="1">
             <thead>
@@ -53,6 +44,10 @@
             </thead>
             <tbody id="rewards-tbody"></tbody>
         </table>
+        
+        <!-- Кнопка для перерождения -->
+        <button id="rebirth-button" class="rebirth-button">Перерождение</button>
+        <p id="rebirth-message" style="color: red;"></p>
     </div>
 
     <!-- Секция таблицы лидеров -->
@@ -69,12 +64,14 @@
         </table>
     </div>
 
+    <!-- Секция для промокодов -->
+    <div id="promo-section">
+        <h2>Введите промокод:</h2>
+        <input type="text" id="promo-input" maxlength="20">
+        <button id="promo-button" class="subscribe-button">Применить</button>
+        <p id="promo-message" style="color: red;"></p>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
-
-
-    <script src="script.js"></script>
-</body>
-</html>
-
