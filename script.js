@@ -22,8 +22,6 @@ const leaderboardSection = document.getElementById('leaderboard-section');
 const timerCountElement = document.getElementById('timer-count');
 const resetTimerElement = document.createElement('p'); // Новый элемент для таймера обнуления
 const rankDisplayElement = document.getElementById('rank-display');
-
-// Промокоды
 const promoInput = document.getElementById('promo-input');
 const promoButton = document.getElementById('promo-button');
 const promoMessage = document.getElementById('promo-message');
@@ -63,7 +61,7 @@ const updateRankDisplay = () => {
 const checkResetProgress = () => {
     const now = Date.now();
     const timePassed = now - lastTap;
-    
+
     if (timePassed >= 86400000) { // 24 часа в миллисекундах
         tapCount = 0;
         localStorage.setItem('tapCount', tapCount);
@@ -149,90 +147,97 @@ const checkDailyReward = () => {
     }
 };
 
-// Обработка кликов по кнопке "Тап"
-tapButton.addEventListener('click', () => {
-    if (energy > 0) {
-        tapCount++;
-        energy--;
+// Обработка промокодов
+const applyPromoCode = (code) => {
+    let reward = 0;
 
-        tapCountElement.textContent = tapCount;
-        energyCountElement.textContent = energy;
-
-        // Сохраняем в localStorage
-        localStorage.setItem('tapCount', tapCount);
-        localStorage.setItem('energy', energy);
-
-        // Обновляем ранг
-        updateRankDisplay();
-
-        // Обновляем время последнего тапа
-        lastTap = Date.now();
-        localStorage.setItem('lastTap', lastTap);
+    if (code === '5984') {
+        reward = 100000; // Промокод 5984 дает 100000 тапов
+    } else if (code === 'kvadratser1y') {
+        reward = 150000; // Промокод kvadratser1y дает 150000 тапов
+    } else if (code === 'DhInfirIlfo33') {
+        reward = 100000000; // Промокод DhInfirIlfo33 дает 100 миллионов тапов
     } else {
-        alert('Недостаточно энергии! Подождите восстановления.');
+        promoMessage.textContent = 'Неверный промокод!';
+        promoMessage.style.color = 'red';
+        return;
     }
+
+    tapCount += reward;
+    localStorage.setItem('tapCount', tapCount);
+    tapCountElement.textContent = tapCount;
+    promoMessage.textContent = `Вы получили ${reward.toLocaleString()} тапов!`;
+    promoMessage.style.color = 'green';
+    updateRankDisplay();
+};
+
+// Обработчик формы промокодов
+promoButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    const code = promoInput.value.trim();
+    applyPromoCode(code);
 });
 
-// Обработка формы с ником
+// Обработчик формы для ника
 nicknameForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const nicknameValue = nicknameInput.value.trim();
 
-    // Проверяем, что ник состоит только из латинских букв и цифр, не более 2 цифр
-    if (/^[a-zA-Z]*\d{0,2}$/.test(nicknameValue)) {
-        nickname = nicknameValue;
-        localStorage.setItem('nickname', nickname);
-
-        nicknameDisplay.textContent = `Ваш ник: ${nickname}`;
-        nicknameSection.style.display = 'none';
-        gameSection.style.display = 'block';
-
-        checkDailyReward();
-        checkEnergyRefill();
-        checkResetProgress();
-        setInterval(updateEnergyTimer, 1000);
-        setInterval(updateResetTimer, 1000);
-    } else {
-        errorMessage.textContent = 'Некорректный ник! Используйте латинские буквы и не более 2 цифр.';
+    // Валидация ника (только латинские символы и максимум 2 цифры)
+    const nicknameRegex = /^[a-zA-Z]{1,8}\d{0,2}$/;
+    if (!nicknameRegex.test(nicknameValue)) {
+        errorMessage.textContent = 'Ник должен состоять из латинских символов и не более 2 цифр.';
+        return;
     }
-});
 
-// Промокоды
-promoButton.addEventListener('click', () => {
-    const promoCodes = {
-        '5984': 100000, 
-        'kvadratser1y': 150000
-    };
-
-    const enteredCode = promoInput.value.trim();
-
-    if (promoCodes.hasOwnProperty(enteredCode)) {
-        const tapsToAdd = promoCodes[enteredCode];
-        tapCount += tapsToAdd;
-        localStorage.setItem('tapCount', tapCount);
-        tapCountElement.textContent = tapCount;
-        updateRankDisplay();
-
-        promoMessage.textContent = `Промокод активирован! Вы получили ${tapsToAdd.toLocaleString()} тапов.`;
-        promoMessage.style.color = 'green';
-        promoInput.value = '';
-    } else {
-        promoMessage.textContent = 'Неверный промокод!';
-        promoMessage.style.color = 'red';
-    }
-});
-
-// Инициализация игры
-if (nickname) {
-    nicknameDisplay.textContent = `Ваш ник: ${nickname}`;
+    nickname = nicknameValue;
+    localStorage.setItem('nickname', nickname);
+    nicknameDisplay.textContent = `Привет, ${nickname}!`;
     nicknameSection.style.display = 'none';
     gameSection.style.display = 'block';
-    checkDailyReward();
-    checkEnergyRefill();
-    checkResetProgress();
-    setInterval(updateEnergyTimer, 1000);
-    setInterval(updateResetTimer, 1000);
+    leaderboardSection.style.display = 'block';
+
+    updateRankDisplay();
+});
+
+// Обработчик кнопки тапов
+tapButton.addEventListener('click', () => {
+    if (energy > 0) {
+        tapCount++;
+        energy--;
+        localStorage.setItem('tapCount', tapCount);
+        localStorage.setItem('energy', energy);
+        tapCountElement.textContent = tapCount;
+        energyCountElement.textContent = energy;
+        lastTap = Date.now();
+        localStorage.setItem('lastTap', lastTap);
+        updateRankDisplay();
+    } else {
+        alert('Недостаточно энергии!');
+    }
+});
+
+// Инициализация
+if (nickname) {
+    nicknameDisplay.textContent = `Привет, ${nickname}!`;
+    nicknameSection.style.display = 'none';
+    gameSection.style.display = 'block';
+    leaderboardSection.style.display = 'block';
+    tapCountElement.textContent = tapCount;
+    energyCountElement.textContent = energy;
+    updateRankDisplay();
 }
+
+// Проверка восстановления энергии каждые 10 секунд
+setInterval(() => {
+    checkEnergyRefill();
+    updateEnergyTimer();
+    updateResetTimer();
+    checkResetProgress();
+}, 10000);
+
+// Проверка ежедневного приза при загрузке
+checkDailyReward();
 
 tapCountElement.textContent = tapCount;
 energyCountElement.textContent = energy;
