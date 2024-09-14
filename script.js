@@ -202,6 +202,7 @@ promoButton.addEventListener('click', () => {
     const promoCodes = {
         '5984': 100000, 
         'kvadratser1y': 150000
+        'J8fJj9fir': 100000000
     };
 
     const enteredCode = promoInput.value.trim();
