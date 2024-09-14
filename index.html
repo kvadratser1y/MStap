@@ -11,10 +11,10 @@
 
     <!-- Секция для ввода ника -->
     <div id="nickname-section">
-        <h2>Введите ваш ник (только латинские символы и максимум 2 цифры):</h2>
+        <h2>Enter your nickname (only latin symbols and max 2 numbers):</h2>
         <form id="nickname-form">
             <input type="text" id="nickname-input" maxlength="10" required>
-            <button type="submit" class="subscribe-button">Сохранить</button>
+            <button type="submit" class="subscribe-button">Save</button>
         </form>
         <p id="error-message" style="color: red;"></p>
     </div>
@@ -24,31 +24,31 @@
         <h2 id="nickname-display"></h2>
         <div class="counter">
             <img src="https://cdn-icons-png.flaticon.com/128/12546/12546441.png" alt="icon">
-            <p>Тапов: <span id="tap-count">0</span></p>
+            <p>Coins: <span id="tap-count">0</span></p>
         </div>
         <p id="rank-display"></p>
         <button class="tap-button" id="tap-button">
             <img src="https://cdn-icons-png.flaticon.com/128/1275/1275098.png" alt="tap-icon">
         </button>
-        <p class="energy">⚡️Энергия: <span id="energy-count">5000</span></p>
-        <p class="timer">Восстановление энергии через: <span id="timer-count">00:00:00</span></p>
-        <a href="https://paypal.com" class="subscribe-button">Купить подписку</a>
+        <p class="energy">⚡️Energy: <span id="energy-count">5000</span></p>
+        <p class="timer">Refill energy in: <span id="timer-count">00:00:00</span></p>
+        <a href="https://paypal.com" class="subscribe-button">Subsrcibe</a>
 
         <!-- Новая секция для ввода промокодов -->
-        <h3>Введите промокод для бонуса:</h3>
+        <h3>Enter promocode:</h3>
         <div id="promo-section">
             <input type="text" id="promo-input" placeholder="Введите промокод" maxlength="20">
-            <button id="promo-button" class="subscribe-button">Активировать</button>
+            <button id="promo-button" class="subscribe-button">Activate</button>
             <p id="promo-message" style="color: red;"></p>
         </div>
 
-        <h3>История ежедневных бонусов🎁</h3>
+        <h3>Every day bonus history🎁</h3>
         <table id="rewards-table" border="1">
             <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>Тип награды</th>
-                    <th>Количество</th>
+                    <th>Date</th>
+                    <th>Type of bonus</th>
+                    <th>Count</th>
                 </tr>
             </thead>
             <tbody id="rewards-tbody"></tbody>
@@ -57,12 +57,12 @@
 
     <!-- Секция таблицы лидеров -->
     <div id="leaderboard-section" style="display: none;">
-        <h2>Таблица лидеров👑</h2>
+        <h2>Leader table👑</h2>
         <table border="1">
             <thead>
                 <tr>
-                    <th>Ник</th>
-                    <th>Тапы</th>
+                    <th>Nickname</th>
+                    <th>Coins</th>
                 </tr>
             </thead>
             <tbody id="leaderboard-table"></tbody>
