@@ -1,33 +1,54 @@
 body {
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
     font-family: 'Montserrat', sans-serif;
     background: url('https://i.pinimg.com/564x/47/9e/e4/479ee40ab9ae84e296b3c966783874a1.jpg') no-repeat center center fixed;
     background-size: cover;
     text-align: center;
     overflow-y: auto; /* Добавляем прокрутку */
-    height: 100%; /* Корректное отображение на мобильных */
-    box-sizing: border-box;
 }
 
-#nickname-section, #game-section, #leaderboard-section {
+#nickname-section, #game-section, #leaderboard-section, #referral-section, #rewards-section, #promocodes-section, #rebirth-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex: 1; /* Позволяет секциям занимать оставшееся пространство */
+}
+
+#nav-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: navy;
+    padding: 10px;
+    border-top: 2px solid black;
+    position: fixed;
+    bottom: 0;
     width: 100%;
-    max-width: 600px;
-    padding: 20px;
-    box-sizing: border-box;
+}
+
+.nav-button {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-button img {
+    width: 32px; /* Увеличиваем размер кнопок */
+    height: 32px;
 }
 
 .counter {
+    position: relative;
     font-size: 24px;
     color: white;
     margin-top: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .counter img {
@@ -39,7 +60,7 @@ body {
 .tap-button {
     background: none;
     border: none;
-    padding: 15px;
+    padding: 20px;
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
@@ -47,8 +68,8 @@ body {
 }
 
 .tap-button img {
-    width: 200px;
-    height: 200px;
+    width: 256px;
+    height: 256px;
 }
 
 .tap-button:active {
@@ -62,8 +83,8 @@ body {
     color: white;
 }
 
-.subscribe-button, .rebirth-button {
-    margin-top: 20px;
+.subscribe-button {
+    margin-top: 30px;
     padding: 10px 20px;
     background-color: #e74c3c;
     color: white;
@@ -73,19 +94,10 @@ body {
     cursor: pointer;
     text-decoration: none;
     text-align: center;
-    transition: background-color 0.3s ease;
 }
 
-.subscribe-button:hover, .rebirth-button:hover {
+.subscribe-button:hover {
     background-color: #c0392b;
-}
-
-.rebirth-button {
-    background-color: #3498db;
-}
-
-.rebirth-button:hover {
-    background-color: #2980b9;
 }
 
 table {
@@ -93,14 +105,10 @@ table {
     color: white;
     border-collapse: collapse;
     text-align: center;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow-x: auto;
 }
 
 th, td {
-    padding: 8px;
+    padding: 10px;
     border: 1px solid white;
 }
 
@@ -111,30 +119,15 @@ html, body {
 
 @media screen and (max-width: 600px) {
     .tap-button img {
-        width: 150px; /* Уменьшение иконки на мобильных устройствах */
-        height: 150px;
+        width: 200px; /* Уменьшение на мобильных устройствах */
+        height: 200px;
     }
 
     .energy, .timer {
         font-size: 16px; /* Уменьшение шрифта на мобильных устройствах */
     }
 
-    .counter {
-        font-size: 18px; /* Уменьшение шрифта для маленьких экранов */
-    }
-
     table {
         font-size: 14px;
     }
-
-    #nickname-section, #game-section, #leaderboard-section {
-        padding: 10px; /* Уменьшение паддингов для лучшего отображения */
-    }
-}
-
-/* Исправляем прокрутку для мобильных */
-#game-section {
-    height: auto; /* Не фиксированная высота */
-    min-height: 100vh; /* Контент всегда занимает минимум 100% высоты экрана */
-    overflow-y: auto; /* Добавляем вертикальную прокрутку */
 }
