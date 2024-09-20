@@ -1,15 +1,12 @@
 body {
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
     font-family: 'Montserrat', sans-serif;
     background: url('https://i.pinimg.com/564x/47/9e/e4/479ee40ab9ae84e296b3c966783874a1.jpg') no-repeat center center fixed;
     background-size: cover;
     text-align: center;
+    overflow-y: auto; /* Добавляем прокрутку */
+    height: 100%; /* Корректное отображение на мобильных */
     box-sizing: border-box;
 }
 
@@ -133,4 +130,11 @@ html, body {
     #nickname-section, #game-section, #leaderboard-section {
         padding: 10px; /* Уменьшение паддингов для лучшего отображения */
     }
+}
+
+/* Исправляем прокрутку для мобильных */
+#game-section {
+    height: auto; /* Не фиксированная высота */
+    min-height: 100vh; /* Контент всегда занимает минимум 100% высоты экрана */
+    overflow-y: auto; /* Добавляем вертикальную прокрутку */
 }
