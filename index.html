@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale: 1.0">
     <title>Tap Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -19,7 +19,7 @@
         <p id="error-message" style="color: red;"></p>
     </div>
 
-    <!-- Главный раздел игры -->
+    <!-- Секция игры (сначала скрыта) -->
     <div id="game-section" style="display: none;">
         <h2 id="nickname-display"></h2>
         <div class="counter">
@@ -32,73 +32,47 @@
         </button>
         <p class="energy">⚡️Энергия: <span id="energy-count">5000</span></p>
         <p class="timer">Восстановление энергии через: <span id="timer-count">00:00:00</span></p>
+        <a href="https://paypal.com" class="subscribe-button">Купить подписку</a>
+    </div>
 
-        <!-- Реферальная программа -->
+    <!-- Нижняя панель с кнопками -->
+    <div id="nav-panel" style="display: none;">
+        <button id="daily-rewards-btn">
+            <img src="https://cdn-icons-png.flaticon.com/128/5527/5527958.png" alt="Бонусы">
+        </button>
+        <button id="leaderboard-btn">
+            <img src="https://cdn-icons-png.flaticon.com/128/13085/13085501.png" alt="Лидеры">
+        </button>
+        <button id="main-btn">
+            <img src="https://cdn-icons-png.flaticon.com/128/3917/3917033.png" alt="Главная">
+        </button>
+        <button id="promocodes-btn">
+            <img src="https://cdn-icons-png.flaticon.com/128/3916/3916614.png" alt="Промокоды">
+        </button>
+        <button id="rebirth-btn">
+            <img src="https://cdn-icons-png.flaticon.com/128/3917/3917293.png" alt="Возрождение">
+        </button>
+    </div>
+
+    <!-- Секция реферальной программы -->
+    <div id="referral-section" style="display: none;">
         <h3>Реферальная программа</h3>
-        <p>Привлекай друзей и ежедневно получай 15% от их заработка в тапах. Чем больше друзей присоединяется к нашей платформе через твою ссылку, тем выше твой ежедневный доход.</p>
-        <p>Твоя уникальная реферальная ссылка: <span id="referral-link">https://t.me/bmjcoinbot?start=</span></p>
-        <button id="share-referral">Поделиться с друзьями</button>
-
-        <p>При заходе по вашей ссылке вы получите 15% от дохода друга и 2 000 000 ТАПОВ, а друг - 1 000 000 ТАПОВ!</p>
+        <p>Привлекай друзей и ежедневно получай 15% от их заработка в тапах.</p>
+        <p>Твоя уникальная реферальная ссылка:</p>
+        <p id="referral-link"></p>
+        <button id="share-referral">Поделитесь ссылкой с друзьями</button>
     </div>
 
-    <!-- Ежедневные бонусы -->
-    <div id="rewards-section" style="display: none;">
-        <h3>История ежедневных бонусов🎁</h3>
-        <table id="rewards-table" border="1">
-            <thead>
-                <tr>
-                    <th>Дата</th>
-                    <th>Тип награды</th>
-                    <th>Количество</th>
-                </tr>
-            </thead>
-            <tbody id="rewards-tbody"></tbody>
-        </table>
-    </div>
-
-    <!-- Таблица лидеров -->
-    <div id="leaderboard-section" style="display: none;">
-        <h3>Таблица лидеров👑</h3>
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Ник</th>
-                    <th>Тапы</th>
-                </tr>
-            </thead>
-            <tbody id="leaderboard-table"></tbody>
-        </table>
-    </div>
-
-    <!-- Промокоды -->
+    <!-- Секции других разделов (бонусы, таблица лидеров, промокоды, возрождение) -->
+    <div id="rewards-section" style="display: none;">История ежедневных бонусов</div>
+    <div id="leaderboard-section" style="display: none;">Таблица лидеров</div>
     <div id="promocodes-section" style="display: none;">
-        <h3>Промокоды</h3>
+        Промокоды
         <input type="text" id="promo-code-input" placeholder="Введите промокод">
         <button id="apply-promo">Применить</button>
         <p id="promo-message"></p>
     </div>
-
-    <!-- Возрождения -->
-    <div id="rebirth-section" style="display: none;">
-        <h3>Возрождение</h3>
-        <p>1-е Возрождение: +2 тапа за 1 тап +1к тапов в час (необходимо 10к тапов)</p>
-        <p>2-е Возрождение: +10 тапов за 1 тап +10к тапов в час (необходимо 100к тапов)</p>
-        <p>3-е Возрождение: +100 тапов за 1 тап +100к тапов в час (необходимо 1кк тапов)</p>
-        <p>4-е Возрождение: +1000 тапов за 1 тап +1кк тапов в час (необходимо 10кк тапов)</p>
-        <p>5-е Возрождение: +10000 тапов за 1 тап +10кк тапов в час (необходимо 100кк тапов)</p>
-        <p>6-е Возрождение: Ты получаешь ничего (необходимо 1 миллиард тапов)</p>
-        <button id="rebirth-button">Сделать Возрождение</button>
-    </div>
-
-    <!-- Нижняя панель навигации -->
-    <div id="navigation-panel">
-        <button id="daily-rewards-btn"><img src="https://cdn-icons-png.flaticon.com/128/5527/5527958.png"></button>
-        <button id="leaderboard-btn"><img src="https://cdn-icons-png.flaticon.com/128/13085/13085501.png"></button>
-        <button id="main-btn"><img src="https://cdn-icons-png.flaticon.com/128/3917/3917033.png"></button>
-        <button id="promocodes-btn"><img src="https://cdn-icons-png.flaticon.com/128/3916/3916614.png"></button>
-        <button id="rebirth-btn"><img src="https://cdn-icons-png.flaticon.com/128/3917/3917293.png"></button>
-    </div>
+    <div id="rebirth-section" style="display: none;">Раздел возрождения</div>
 
     <script src="script.js"></script>
 </body>
