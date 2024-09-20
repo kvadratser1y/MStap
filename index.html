@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale: 1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tap Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -17,22 +17,6 @@
             <button type="submit" class="subscribe-button">Сохранить</button>
         </form>
         <p id="error-message" style="color: red;"></p>
-    </div>
-
-    <!-- Секция игры (сначала скрыта) -->
-    <div id="game-section" style="display: none;">
-        <h2 id="nickname-display"></h2>
-        <div class="counter">
-            <img src="https://cdn-icons-png.flaticon.com/128/12546/12546441.png" alt="icon">
-            <p>Тапов: <span id="tap-count">0</span></p>
-        </div>
-        <p id="rank-display"></p>
-        <button class="tap-button" id="tap-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/1275/1275098.png" alt="tap-icon">
-        </button>
-        <p class="energy">⚡️Энергия: <span id="energy-count">5000</span></p>
-        <p class="timer">Восстановление энергии через: <span id="timer-count">00:00:00</span></p>
-        <a href="https://paypal.com" class="subscribe-button">Купить подписку</a>
     </div>
 
     <!-- Нижняя панель с кнопками -->
@@ -52,6 +36,22 @@
         <button id="rebirth-btn">
             <img src="https://cdn-icons-png.flaticon.com/128/3917/3917293.png" alt="Возрождение">
         </button>
+    </div>
+
+    <!-- Секция игры (сначала скрыта) -->
+    <div id="game-section" style="display: none;">
+        <h2 id="nickname-display"></h2>
+        <div class="counter">
+            <img src="https://cdn-icons-png.flaticon.com/128/12546/12546441.png" alt="icon">
+            <p>Тапов: <span id="tap-count">0</span></p>
+        </div>
+        <p id="rank-display"></p>
+        <button class="tap-button" id="tap-button">
+            <img src="https://cdn-icons-png.flaticon.com/128/1275/1275098.png" alt="tap-icon">
+        </button>
+        <p class="energy">⚡️Энергия: <span id="energy-count">5000</span></p>
+        <p class="timer">Восстановление энергии через: <span id="timer-count">00:00:00</span></p>
+        <a href="https://paypal.com" class="subscribe-button">Купить подписку</a>
     </div>
 
     <!-- Секция реферальной программы -->
@@ -77,4 +77,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
