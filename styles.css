@@ -1,4 +1,3 @@
-/* Основные стили */
 body {
     margin: 0;
     padding: 0;
@@ -15,7 +14,6 @@ body {
     overflow: hidden;
 }
 
-/* Навигационная панель */
 #navigation-panel {
     position: fixed;
     bottom: 0;
@@ -38,7 +36,6 @@ body {
     height: 48px;
 }
 
-/* Стили для реферальной программы */
 #referral-link {
     color: yellow;
     font-weight: bold;
@@ -58,7 +55,6 @@ body {
     background-color: #218838;
 }
 
-/* Адаптивность */
 @media screen and (max-width: 600px) {
     .tap-button img {
         width: 200px;
