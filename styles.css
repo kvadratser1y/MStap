@@ -1,133 +1,71 @@
+/* Основные стили */
 body {
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    height: 100vh;
+    justify-content: center;
     font-family: 'Montserrat', sans-serif;
     background: url('https://i.pinimg.com/564x/47/9e/e4/479ee40ab9ae84e296b3c966783874a1.jpg') no-repeat center center fixed;
     background-size: cover;
     text-align: center;
-    overflow-y: auto; /* Добавляем прокрутку */
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
-#nickname-section, #game-section, #leaderboard-section, #referral-section, #rewards-section, #promocodes-section, #rebirth-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1; /* Позволяет секциям занимать оставшееся пространство */
-}
-
-#nav-panel {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: navy;
-    padding: 10px;
-    border-top: 2px solid black;
+/* Навигационная панель */
+#navigation-panel {
     position: fixed;
     bottom: 0;
     width: 100%;
-}
-
-.nav-button {
-    flex: 1;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    background-color: navy;
+    border-top: 2px solid black;
+    padding: 10px;
 }
 
-.nav-button img {
-    width: 32px; /* Увеличиваем размер кнопок */
-    height: 32px;
-}
-
-.counter {
-    position: relative;
-    font-size: 24px;
-    color: white;
-    margin-top: 20px;
-}
-
-.counter img {
-    width: 24px;
-    height: 24px;
-    margin-right: 10px;
-}
-
-.tap-button {
+#navigation-panel button {
     background: none;
     border: none;
-    padding: 20px;
-    border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.tap-button img {
-    width: 256px;
-    height: 256px;
+#navigation-panel img {
+    width: 48px;
+    height: 48px;
 }
 
-.tap-button:active {
-    transform: scale(0.95);
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+/* Стили для реферальной программы */
+#referral-link {
+    color: yellow;
+    font-weight: bold;
 }
 
-.energy, .timer {
-    margin-top: 20px;
-    font-size: 20px;
+#share-referral {
+    margin-top: 10px;
+    background-color: #28a745;
     color: white;
-}
-
-.subscribe-button {
-    margin-top: 30px;
-    padding: 10px 20px;
-    background-color: #e74c3c;
-    color: white;
-    font-size: 18px;
+    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    text-decoration: none;
-    text-align: center;
 }
 
-.subscribe-button:hover {
-    background-color: #c0392b;
+#share-referral:hover {
+    background-color: #218838;
 }
 
-table {
-    margin-top: 20px;
-    color: white;
-    border-collapse: collapse;
-    text-align: center;
-}
-
-th, td {
-    padding: 10px;
-    border: 1px solid white;
-}
-
-html, body {
-    touch-action: manipulation;
-    -ms-touch-action: manipulation;
-}
-
+/* Адаптивность */
 @media screen and (max-width: 600px) {
     .tap-button img {
-        width: 200px; /* Уменьшение на мобильных устройствах */
+        width: 200px;
         height: 200px;
     }
 
     .energy, .timer {
-        font-size: 16px; /* Уменьшение шрифта на мобильных устройствах */
-    }
-
-    table {
-        font-size: 14px;
+        font-size: 16px;
     }
 }
