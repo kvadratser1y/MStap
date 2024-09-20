@@ -1,263 +1,171 @@
-// Инициализация переменных
-let tapCount = localStorage.getItem('tapCount') ? parseInt(localStorage.getItem('tapCount')) : 0;
-let energy = localStorage.getItem('energy') ? parseInt(localStorage.getItem('energy')) : 5000;
-let lastEnergyRefill = localStorage.getItem('lastEnergyRefill') ? parseInt(localStorage.getItem('lastEnergyRefill')) : Date.now();
-let lastTap = localStorage.getItem('lastTap') ? parseInt(localStorage.getItem('lastTap')) : Date.now();
-let nickname = localStorage.getItem('nickname');
-let dailyStreak = localStorage.getItem('dailyStreak') ? parseInt(localStorage.getItem('dailyStreak')) : 0;
-let lastDailyReward = localStorage.getItem('lastDailyReward') ? parseInt(localStorage.getItem('lastDailyReward')) : 0;
-let rebirths = localStorage.getItem('rebirths') ? parseInt(localStorage.getItem('rebirths')) : 0;
-let tapBonus = localStorage.getItem('tapBonus') ? parseInt(localStorage.getItem('tapBonus')) : 1;
-let tapIncome = localStorage.getItem('tapIncome') ? parseInt(localStorage.getItem('tapIncome')) : 0;
-let rebirthCost = [10000, 100000, 1000000000, 10000000000, 100000000000, 1000000000000];
-let rewards = [2, 10, 100, 1000, 10000, 0];
+document.addEventListener('DOMContentLoaded', () => {
+    const gameSection = document.getElementById('game-section');
+    const rewardsSection = document.getElementById('rewards-section');
+    const leaderboardSection = document.getElementById('leaderboard-section');
+    const promocodesSection = document.getElementById('promocodes-section');
+    const rebirthSection = document.getElementById('rebirth-section');
+    const nicknameSection = document.getElementById('nickname-section');
 
-// Элементы DOM
-const tapCountElement = document.getElementById('tap-count');
-const energyCountElement = document.getElementById('energy-count');
-const nicknameDisplay = document.getElementById('nickname-display');
-const tapButton = document.getElementById('tap-button');
-const leaderboardTable = document.getElementById('leaderboard-table');
-const nicknameForm = document.getElementById('nickname-form');
-const nicknameInput = document.getElementById('nickname-input');
-const errorMessage = document.getElementById('error-message');
-const gameSection = document.getElementById('game-section');
-const nicknameSection = document.getElementById('nickname-section');
-const leaderboardSection = document.getElementById('leaderboard-section');
-const timerCountElement = document.getElementById('timer-count');
-const resetTimerElement = document.createElement('p'); // Новый элемент для таймера обнуления
-const rankDisplayElement = document.getElementById('rank-display');
-const promoInput = document.getElementById('promo-input');
-const promoButton = document.getElementById('promo-button');
-const promoMessage = document.getElementById('promo-message');
-const rebirthButton = document.getElementById('rebirth-button'); // Кнопка перерождения
-const rebirthMessage = document.getElementById('rebirth-message'); // Сообщение о перерождении
+    const mainBtn = document.getElementById('main-btn');
+    const dailyRewardsBtn = document.getElementById('daily-rewards-btn');
+    const leaderboardBtn = document.getElementById('leaderboard-btn');
+    const promocodesBtn = document.getElementById('promocodes-btn');
+    const rebirthBtn = document.getElementById('rebirth-btn');
 
-// Добавляем таймер обнуления под ником
-nicknameDisplay.insertAdjacentElement('afterend', resetTimerElement);
+    const referralLink = document.getElementById('referral-link');
+    const shareReferralBtn = document.getElementById('share-referral');
 
-// Функция для отображения ранга на основе количества тапов
-const getRank = (tapCount) => {
-    if (tapCount >= 1000000000) {
-        return { rank: 'Hellsteel', emoji: '🔥', next: 'Максимальный ранг', tapsForNext: 0 };
-    } else if (tapCount >= 100000000) {
-        return { rank: 'Алмаз', emoji: '💎', next: 'Hellsteel', tapsForNext: 1000000000 - tapCount };
-    } else if (tapCount >= 1000000) {
-        return { rank: 'Золото', emoji: '🥇', next: 'Алмаз', tapsForNext: 100000000 - tapCount };
-    } else if (tapCount >= 100000) {
-        return { rank: 'Железо', emoji: '🛠️', next: 'Золото', tapsForNext: 1000000 - tapCount };
-    } else if (tapCount >= 10000) {
-        return { rank: 'Медь', emoji: '🥉', next: 'Железо', tapsForNext: 100000 - tapCount };
-    } else {
-        return { rank: 'Бронза', emoji: '🟫', next: 'Медь', tapsForNext: 10000 - tapCount };
+    const nicknameForm = document.getElementById('nickname-form');
+    const nicknameInput = document.getElementById('nickname-input');
+    const nicknameDisplay = document.getElementById('nickname-display');
+    const errorMessage = document.getElementById('error-message');
+
+    const tapCountElement = document.getElementById('tap-count');
+    const tapButton = document.getElementById('tap-button');
+    const energyElement = document.getElementById('energy-count');
+    const timerCountElement = document.getElementById('timer-count');
+
+    const promoInput = document.getElementById('promo-code-input');
+    const applyPromoBtn = document.getElementById('apply-promo');
+    const promoMessage = document.getElementById('promo-message');
+
+    const rebirthButton = document.getElementById('rebirth-button');
+
+    let tapCount = 0;
+    let energy = 5000;
+    let nickname = '';
+    let timer = 3600; // 1 час восстановления энергии
+    let referralCode = Math.random().toString(36).substring(2, 10); // генерируем случайный реферальный код
+    referralLink.innerHTML = `https://t.me/bmjcoinbot?start=${referralCode}`;
+
+    // Функция для обновления отображения энергии
+    function updateEnergy() {
+        energyElement.innerText = energy;
     }
-};
 
-// Функция для обновления отображения ранга
-const updateRankDisplay = () => {
-    const { rank, emoji, next, tapsForNext } = getRank(tapCount);
-    
-    if (tapsForNext > 0) {
-        rankDisplayElement.textContent = `${emoji} ${rank} ${tapCount.toLocaleString()} / ${next} ${tapsForNext.toLocaleString()}`;
-    } else {
-        rankDisplayElement.textContent = `${emoji} ${rank} (Максимальный ранг)`;
+    // Таймер для восстановления энергии
+    function startEnergyRecovery() {
+        setInterval(() => {
+            if (energy < 5000) {
+                energy += 10; // Восстанавливаем по 10 единиц энергии каждые 10 секунд
+                updateEnergy();
+            }
+        }, 10000);
     }
-};
 
-// Проверка обнуления прогресса, если игрок не тапал 24 часа
-const checkResetProgress = () => {
-    const now = Date.now();
-    const timePassed = now - lastTap;
-
-    if (timePassed >= 86400000) { // 24 часа в миллисекундах
-        tapCount = 0;
-        localStorage.setItem('tapCount', tapCount);
-        alert('Ваши тапы обнулились за неактивность более 24 часов!');
-        window.location.reload();
+    // Таймер обратного отсчета
+    function startTimer() {
+        setInterval(() => {
+            if (timer > 0) {
+                timer--;
+                const hours = String(Math.floor(timer / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((timer % 3600) / 60)).padStart(2, '0');
+                const seconds = String(timer % 60).padStart(2, '0');
+                timerCountElement.innerText = `${hours}:${minutes}:${seconds}`;
+            }
+        }, 1000);
     }
-};
 
-// Функция для обновления таймера до обнуления
-const updateResetTimer = () => {
-    const now = Date.now();
-    const timePassed = now - lastTap;
-    const timeLeft = 86400000 - timePassed;
+    // Переключение между разделами
+    function showSection(section) {
+        gameSection.style.display = 'none';
+        rewardsSection.style.display = 'none';
+        leaderboardSection.style.display = 'none';
+        promocodesSection.style.display = 'none';
+        rebirthSection.style.display = 'none';
 
-    if (timeLeft > 0) {
-        const hours = Math.floor(timeLeft / 3600000);
-        const minutes = Math.floor((timeLeft % 3600000) / 60000);
-        const seconds = Math.floor((timeLeft % 60000) / 1000);
-        resetTimerElement.textContent = `Обнуление прогресса через: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    } else {
-        resetTimerElement.textContent = '00:00:00';
+        section.style.display = 'block';
     }
-};
 
-// Проверка восстановления энергии
-const checkEnergyRefill = () => {
-    const now = Date.now();
-    const timePassed = now - lastEnergyRefill;
+    // Нажатие кнопок навигации
+    mainBtn.addEventListener('click', () => showSection(gameSection));
+    dailyRewardsBtn.addEventListener('click', () => showSection(rewardsSection));
+    leaderboardBtn.addEventListener('click', () => showSection(leaderboardSection));
+    promocodesBtn.addEventListener('click', () => showSection(promocodesSection));
+    rebirthBtn.addEventListener('click', () => showSection(rebirthSection));
 
-    // Если прошло больше часа (3600000 миллисекунд), восстанавливаем 5000 энергии
-    if (timePassed >= 3600000) {
-        const energyToAdd = Math.floor(timePassed / 3600000) * 5000;
-        energy = Math.min(50000, energy + energyToAdd); // Лимит энергии 50 000
-        lastEnergyRefill = now;
-        localStorage.setItem('lastEnergyRefill', lastEnergyRefill);
-        localStorage.setItem('energy', energy);
-        energyCountElement.textContent = energy;
-    }
-};
-
-// Функция для обновления таймера восстановления энергии
-const updateEnergyTimer = () => {
-    const now = Date.now();
-    const timePassed = now - lastEnergyRefill;
-    const timeLeft = 3600000 - timePassed;
-
-    if (timeLeft > 0) {
-        const minutes = Math.floor(timeLeft / 60000);
-        const seconds = Math.floor((timeLeft % 60000) / 1000);
-        timerCountElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    } else {
-        timerCountElement.textContent = '00:00';
-    }
-};
-
-// Проверка ежедневного приза
-const checkDailyReward = () => {
-    const now = Date.now();
-    const oneDay = 86400000; // 1 день в миллисекундах
-
-    if (now - lastDailyReward >= oneDay) {
-        dailyStreak++; // Увеличиваем серию входов
-        const energyReward = dailyStreak % 2 === 0 ? dailyStreak * 5000 : 0; // Каждый 2-й день энергия
-        const tapReward = dailyStreak % 2 !== 0 ? dailyStreak * 10000 : 0; // Каждый 1-й день тапы
-
-        if (energyReward > 0) {
-            energy = Math.min(50000, energy + energyReward); // Лимит энергии 50 000
-            localStorage.setItem('energy', energy);
-            energyCountElement.textContent = energy;
+    // Форма ввода ника
+    nicknameForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        nickname = nicknameInput.value.trim();
+        if (/^[a-zA-Z]+[0-9]{0,2}$/.test(nickname)) {
+            nicknameDisplay.innerText = `Привет, ${nickname}!`;
+            nicknameSection.style.display = 'none';
+            gameSection.style.display = 'block';
+        } else {
+            errorMessage.innerText = 'Неверный формат ника!';
         }
+    });
 
-        if (tapReward > 0) {
-            tapCount += tapReward;
-            localStorage.setItem('tapCount', tapCount);
-            tapCountElement.textContent = tapCount;
-            updateRankDisplay(); // Обновляем ранг
+    // Нажатие на кнопку тапов
+    tapButton.addEventListener('click', () => {
+        if (energy > 0) {
+            tapCount++;
+            tapCountElement.innerText = tapCount;
+            energy--;
+            updateEnergy();
         }
+    });
 
-        lastDailyReward = now;
-        localStorage.setItem('dailyStreak', dailyStreak);
-        localStorage.setItem('lastDailyReward', lastDailyReward);
-        alert(`Вы получили ежедневный приз: ${tapReward > 0 ? tapReward + ' тапов' : energyReward + ' энергии'}!`);
-    }
-};
+    // Применение промокода
+    applyPromoBtn.addEventListener('click', () => {
+        const promoCode = promoInput.value.trim();
+        if (promoCode === 'DhInfirIlfo33') {
+            tapCount += 100000000; // 100 миллионов тапов
+            tapCountElement.innerText = tapCount;
+            promoMessage.innerText = 'Промокод применён! Вы получили 100 миллионов тапов.';
+        } else {
+            promoMessage.innerText = 'Неверный промокод!';
+        }
+    });
 
-// Проверка перерождения
-const checkRebirth = () => {
-    const { rank, tapsForNext } = getRank(tapCount);
+    // Реферальная программа
+    shareReferralBtn.addEventListener('click', () => {
+        const shareText = `Играй со мной! Стань самым крутым диджеем в крипто-тусовке и получи токены через аирдроп!\n\nССЫЛКА: https://t.me/bmjcoinbot?start=${referralCode}\n\nБонус за друга: 1 000 000 ТАПОВ!`;
+        navigator.clipboard.writeText(shareText).then(() => {
+            alert('Реферальная ссылка скопирована в буфер обмена!');
+        });
+    });
 
-    if (rebirths >= 6) {
-        rebirthMessage.textContent = 'Вы достигли максимального ранга и не можете перерождаться.';
-        return;
-    }
+    // Перерождение
+    rebirthButton.addEventListener('click', () => {
+        let rebirthLevel = 0;
+        if (tapCount >= 1000000000) {
+            alert('Ты достиг последнего уровня перерождений!');
+            rebirthLevel = 6;
+        } else if (tapCount >= 100000000) {
+            alert('Поздравляем с 5-м перерождением! +10000 тапов за тап и +10кк тапов в час');
+            tapCount = 0;
+            energy = 5000;
+            rebirthLevel = 5;
+        } else if (tapCount >= 10000000) {
+            alert('Поздравляем с 4-м перерождением! +1000 тапов за тап и +1кк тапов в час');
+            tapCount = 0;
+            energy = 5000;
+            rebirthLevel = 4;
+        } else if (tapCount >= 1000000) {
+            alert('Поздравляем с 3-м перерождением! +100 тапов за тап и +100к тапов в час');
+            tapCount = 0;
+            energy = 5000;
+            rebirthLevel = 3;
+        } else if (tapCount >= 100000) {
+            alert('Поздравляем со 2-м перерождением! +10 тапов за тап и +10к тапов в час');
+            tapCount = 0;
+            energy = 5000;
+            rebirthLevel = 2;
+        } else if (tapCount >= 10000) {
+            alert('Поздравляем с 1-м перерождением! +2 тапа за тап и +1к тапов в час');
+            tapCount = 0;
+            energy = 5000;
+            rebirthLevel = 1;
+        } else {
+            alert('Недостаточно тапов для перерождения.');
+        }
+        tapCountElement.innerText = tapCount;
+        updateEnergy();
+    });
 
-    if (tapCount >= rebirthCost[rebirths]) {
-        // Сброс тапов и энергии
-        tapCount = 0;
-        energy = 5000; // начальная энергия
-        localStorage.setItem('tapCount', tapCount);
-        localStorage.setItem('energy', energy);
-
-        // Обновление бонусов
-        tapBonus = rewards[rebirths];
-        tapIncome = tapBonus * 1000;
-        localStorage.setItem('tapBonus', tapBonus);
-        localStorage.setItem('tapIncome', tapIncome);
-
-        rebirths++;
-        localStorage.setItem('rebirths', rebirths);
-
-        // Обновление отображения ранга
-        updateRankDisplay();
-        
-        rebirthMessage.textContent = `Поздравляем! Вы переродились и теперь имеете бонус ${tapBonus} тапов за 1 тап и ${tapIncome} тапов в час.`;
-    } else {
-        rebirthMessage.textContent = `Для перерождения требуется ${rebirthCost[rebirths].toLocaleString()} тапов.`;
-    }
-};
-
-// Обработчик формы для промокодов
-promoButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    const code = promoInput.value.trim();
-    applyPromoCode(code);
+    // Запуск таймера восстановления энергии и обратного отсчета
+    startEnergyRecovery();
+    startTimer();
 });
-
-// Обработчик формы для ника
-nicknameForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const nicknameValue = nicknameInput.value.trim();
-
-    // Валидация ника (только латинские символы и максимум 2 цифры)
-    const nicknameRegex = /^[a-zA-Z]{1,8}\d{0,2}$/;
-    if (!nicknameRegex.test(nicknameValue)) {
-        errorMessage.textContent = 'Ник должен состоять из латинских символов и не более 2 цифр.';
-        return;
-    }
-
-    nickname = nicknameValue;
-    localStorage.setItem('nickname', nickname);
-    nicknameDisplay.textContent = `Привет, ${nickname}!`;
-    nicknameSection.style.display = 'none';
-    gameSection.style.display = 'block';
-    leaderboardSection.style.display = 'block';
-
-    updateRankDisplay();
-});
-
-// Обработчик кнопки тапов
-tapButton.addEventListener('click', () => {
-    if (energy > 0) {
-        tapCount += tapBonus;
-        energy--;
-        localStorage.setItem('tapCount', tapCount);
-        localStorage.setItem('energy', energy);
-        tapCountElement.textContent = tapCount;
-        energyCountElement.textContent = energy;
-        lastTap = Date.now();
-        localStorage.setItem('lastTap', lastTap);
-        updateRankDisplay();
-    } else {
-        alert('Недостаточно энергии!');
-    }
-});
-
-// Обработчик кнопки перерождения
-rebirthButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    checkRebirth();
-});
-
-// Инициализация
-if (nickname) {
-    nicknameDisplay.textContent = `Привет, ${nickname}!`;
-    nicknameSection.style.display = 'none';
-    gameSection.style.display = 'block';
-    leaderboardSection.style.display = 'block';
-    tapCountElement.textContent = tapCount;
-    energyCountElement.textContent = energy;
-    updateRankDisplay();
-}
-
-// Проверка восстановления энергии каждые 10 секунд
-setInterval(() => {
-    checkEnergyRefill();
-    updateEnergyTimer();
-    updateResetTimer();
-    checkResetProgress();
-}, 10000);
-
-// Проверка ежедневного приза при загрузке
-checkDailyReward();
